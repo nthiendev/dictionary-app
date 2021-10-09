@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="heading">English Dictionary</header>
+        <div class="input">
+            <input type="text" placeholder="Search a word">
+            <i class="fas fa-search"></i>
+            <span class="fas fa-times"></span>
+        </div>
+        <p class="info-search"></p>
+        
+        <div class="body">
+            <div class="sound">
+                <h2>pleasure</h2>
+                <p></p>
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <div class="meaning">
+                <h4>Meaning</h4>
+                <p>a feeling of happy satisfaction and enjoyment</p>
+            </div>
+            <div class="example">
+                <h4>Example</h4>
+                <p>a feeling of happy satisfaction and enjoyment</p>
+            </div>
+            <div class="synonyms">
+                <h4>Synonyms</h4>
+                <p>a feeling of happy satisfaction and enjoyment</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const $ = document.querySelector.bind(document)
+        const $$ = document.querySelectorAll.bind(document)
+
+        const input = $('.input input')
+        const close = $('.input span')
+        const info = $('.info-search')
+        const mean = $('.meaning p')
+        const example = $('.example p')
+        const synonyms = $('.synonyms p')
+        const body = $('.body')
+        const iconClose = $('.input span')
+        const sound = $('.sound p')
+        const iconSound = $('.sound i')
+        
+
+        function data(result, word) {
+            if(result.title) {
+                body.style.display = 'none'
+                info.innerText  = `Can't find meaning of '${word}'`
+                info.style.color = 'red'
+            }else {
+                let html =''
+                info.innerText = ''
+                body.style.display = 'block'
+                mean.innerText = result[0].meanings[0].definitions[0].definition
+                example.innerText = result[0].meanings[0].definitions[0].example
+                const phonetic = `${result[0].meanings[0].partOfSpeech} / ${result[0].phonetic}`
+                sound.innerText = phonetic
+                const auido = new Audio(`https:${result[0].phonetics[0].audio}`)
+                console.log(auido)
+                for(let i = 0; i < 4; i++) {
+                    html += `${result[0].meanings[0].definitions[0].synonyms[i]}, `
+                }
+                synonyms.innerText =html
+                iconSound.onclick =() => {
+                    auido.play()
+                }
+                }
+                iconClose.onclick = () => {
+                    input.value = ''
+                    body.style.display = 'none'
+                    info.style.display = 'none'
+                }
+        }
+
+        function fetchApi(word) {
+            info.style.display = 'block'
+            info.style.color = '#000'
+            info.innerText = `Searching for '${word}'`
+            const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+            fetch(url).then(res => res.json()).then(result => {
+                console.log(result)
+                data(result, word)})
+        }
+
+        function wordNeedFind() {
+            input.onkeyup = (e) => {
+                if(e.keyCode === 13 && e.target.value) {
+                    fetchApi(e.target.value)
+                }
+            }
+        }
+
+        wordNeedFind()
+
+    </script>
+</body>
+</html>
